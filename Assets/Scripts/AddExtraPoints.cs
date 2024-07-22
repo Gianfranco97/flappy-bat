@@ -4,7 +4,7 @@ public class AddExtraPoints : MonoBehaviour
 {
     private ScoreManager scoreManager;
     private AudioManager audioManager;
-    [SerializeField] float points = 100;
+    [SerializeField] int points = 100;
 
     void Start()
     {

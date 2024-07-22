@@ -16,23 +16,16 @@ public class BatActions : MonoBehaviour
     public int moveTime = 500;
     public Timer timer;
     public AudioManager audioManager;
-    private float objectWidth;
-    private float objectHeight;
-
-
-    void Start()
-    {
-        objectWidth = orinalPlayer.transform.GetComponent<SpriteRenderer>().bounds.extents.x; //extents = size of width / 2
-        objectHeight = orinalPlayer.transform.GetComponent<SpriteRenderer>().bounds.extents.y; //extents = size of height / 2
-    }
+    public CameraBoundaries cameraBoundaries;
+    public ScoreManager scoreManager;
+    public GameManager gameManager;
 
     private void TeleportPlayer()
     {
-        Vector2 screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         Vector3 clonePosition = clonePreview.transform.position;
 
-        clonePosition.x = Mathf.Clamp(clonePosition.x, screenBounds.x - Camera.main.orthographicSize - objectWidth, screenBounds.x - objectWidth);
-        clonePosition.y = Mathf.Clamp(clonePosition.y, screenBounds.y * -1 + objectHeight, screenBounds.y - objectHeight);
+        clonePosition.x = Mathf.Clamp(clonePosition.x, cameraBoundaries.leftBoundary, cameraBoundaries.rightBoundary);
+        clonePosition.y = Mathf.Clamp(clonePosition.y, cameraBoundaries.botBoundary, cameraBoundaries.topBoundary);
 
         transform.position = clonePosition;
         audioManager.Move();
@@ -58,18 +51,17 @@ public class BatActions : MonoBehaviour
             arrow.SetActive(false);
             Time.timeScale = 1f;
         }
-
     }
 
     private void DirectionalArrow()
     {
         showDirectionArrow();
 
-        float directionX = joystick.Direction.x;
-        float directionY = joystick.Direction.y;
-        float degrees = directionX + directionY * 360;
+        Vector2 point = joystick.Direction.normalized;
+        float angleRad = Mathf.Atan2(point.y, point.x);
+        float angleDeg = angleRad * Mathf.Rad2Deg;
 
-        arrow.transform.rotation = Quaternion.Euler(0, 0, degrees);
+        arrow.transform.rotation = Quaternion.Euler(0, 0, angleDeg);
     }
 
     void Update()
@@ -87,13 +79,29 @@ public class BatActions : MonoBehaviour
         }
     }
 
+    private void MonsterCollision()
+    {
+        audioManager.Dead();
+        gameOverSrcreen.Setup();
+        joystick.gameObject.SetActive(false);
+    }
+
+    private void UpdateHighScore()
+    {
+        Debug.Log(scoreManager.totalScore);
+        Debug.Log(gameManager.highScore);
+        if (scoreManager.totalScore > gameManager.highScore)
+        {
+            gameManager.saveNewHighScore(scoreManager.totalScore);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("Monster"))
         {
-            audioManager.Dead();
-            gameOverSrcreen.Setup();
-            joystick.gameObject.SetActive(false);
+            MonsterCollision();
+            UpdateHighScore();
         }
     }
 }

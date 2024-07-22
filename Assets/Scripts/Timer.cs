@@ -13,13 +13,18 @@ public class Timer : MonoBehaviour
     {
         text = GetComponent<TextMeshProUGUI>();
         animator = GetComponent<Animator>();
+        InvokeRepeating("IncreaseScore", 0, 1f);
+    }
+
+    private void IncreaseScore()
+    {
+        time += 1;
+        scoreManager.AddScorePoints(1, false);
+        text.text = "Time: " + time.ToString("F0") + "s";
     }
 
     private void Update()
     {
-        time += Time.deltaTime;
-        scoreManager.AddScorePoints(1 * Time.deltaTime, false);
-        text.text = "Time: " + time.ToString("F0") +"s";
         animator.SetBool("inBulletTime", inBulletTime);
     }
 }

@@ -3,7 +3,7 @@ using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
-    [SerializeField] float totalScore = 0;
+    public int totalScore = 0;
     [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] TextMeshProUGUI extraPointsText;
 
@@ -12,7 +12,7 @@ public class ScoreManager : MonoBehaviour
         extraPointsText.gameObject.SetActive(false);
     }
 
-    public void AddScorePoints(float points, bool showFeedback)
+    public void AddScorePoints(int points, bool showFeedback)
     {
         totalScore += points;
         if (showFeedback)
@@ -26,6 +26,6 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        scoreText.text = "Score: " + totalScore.ToString("F0");
+        scoreText.text = $"Actual Score: {totalScore.ToString("F0")}";
     }
 }

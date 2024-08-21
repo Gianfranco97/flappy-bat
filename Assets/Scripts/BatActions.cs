@@ -19,6 +19,7 @@ public class BatActions : MonoBehaviour
     public CameraBoundaries cameraBoundaries;
     public ScoreManager scoreManager;
     public GameManager gameManager;
+    public GameObject jumpBlock;
 
     private void TeleportPlayer()
     {
@@ -31,37 +32,10 @@ public class BatActions : MonoBehaviour
         audioManager.Move();
     }
 
-    private async void showDirectionArrow()
+    private void HideJumpBlock()
     {
-        if (timer.inBulletTime == false && isMovingAllowed)
-        {
-            isMovingAllowed = false;
-            arrow.SetActive(true);
-            Time.timeScale = 0.05f;
-
-            animator.SetBool("inBulletTime", true);
-            timer.inBulletTime = true;
-
-            await Task.Delay(moveTime);
-
-            animator.SetBool("inBulletTime", false);
-            timer.inBulletTime = false;
-
-            TeleportPlayer();
-            arrow.SetActive(false);
-            Time.timeScale = 1f;
-        }
-    }
-
-    private void DirectionalArrow()
-    {
-        showDirectionArrow();
-
-        Vector2 point = joystick.Direction.normalized;
-        float angleRad = Mathf.Atan2(point.y, point.x);
-        float angleDeg = angleRad * Mathf.Rad2Deg;
-
-        arrow.transform.rotation = Quaternion.Euler(0, 0, angleDeg);
+        jumpBlock.SetActive(false);
+        isMovingAllowed = true;
     }
 
     void Update()
@@ -69,18 +43,40 @@ public class BatActions : MonoBehaviour
         transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         Camera.main.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
 
-        if (joystick.isTouching)
+        if ((isMovingAllowed || timer.inBulletTime) && joystick.isTouching)
         {
-            DirectionalArrow();
+            timer.inBulletTime = true;
+            isMovingAllowed = false;
+            arrow.SetActive(true);
+            Time.timeScale = 0.05f;
+
+            animator.SetBool("inBulletTime", true);
+
+            Vector2 point = joystick.Direction.normalized;
+            float angleRad = Mathf.Atan2(point.y, point.x);
+            float angleDeg = angleRad * Mathf.Rad2Deg;
+
+            arrow.transform.rotation = Quaternion.Euler(0, 0, angleDeg);
+
         }
-        else if (!joystick.isTouching)
+        else if (timer.inBulletTime && !joystick.isTouching)
         {
-            isMovingAllowed = true;
+            TeleportPlayer();
+
+            animator.SetBool("inBulletTime", false);
+            timer.inBulletTime = false;
+            arrow.SetActive(false);
+            Time.timeScale = 1f;
+
+            jumpBlock.SetActive(true);
+            Invoke("HideJumpBlock", 0.85f);
         }
     }
 
     private void MonsterCollision()
     {
+        isMovingAllowed = false;
+        timer.inBulletTime = false;
         audioManager.Dead();
         gameOverSrcreen.Setup();
         joystick.gameObject.SetActive(false);

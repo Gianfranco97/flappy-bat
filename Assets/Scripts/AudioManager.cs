@@ -3,7 +3,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip menuButton, getItem, dead, move;
+    public AudioClip menuButton, getItem, getRuby, dead, move;
 
     public void ClickMenuButton()
     {
@@ -19,6 +19,12 @@ public class AudioManager : MonoBehaviour
     public void GetItem()
     {
         audioSource.clip = getItem;
+        audioSource.Play();
+    }
+
+    public void GetRuby()
+    {
+        audioSource.clip = getRuby;
         audioSource.Play();
     }
 

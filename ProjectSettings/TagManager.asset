@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Monster
   - NextMonsterPreview
+  - RubyPoints
+  - SkinPreview
+  - SkinQuestionMark
+  - SkinTitle
+  - SkinRuby
+  - SkinTitleBackground
   layers:
   - Default
   - TransparentFX

@@ -17,7 +17,7 @@ public class ScoreManager : MonoBehaviour
         totalScore += points;
         if (showFeedback)
         {
-            extraPointsText.text = "+" + points.ToString("F0");
+            extraPointsText.text = $"+{points}";
             extraPointsText.gameObject.SetActive(true);
 
             Invoke("HideExtraPoints", 1f);
@@ -26,6 +26,6 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        scoreText.text = $"Actual Score: {totalScore.ToString("F0")}";
+        scoreText.text = $"Actual Score: {totalScore}";
     }
 }

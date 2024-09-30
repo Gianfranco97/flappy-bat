@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -20,6 +19,17 @@ public class BatActions : MonoBehaviour
     public ScoreManager scoreManager;
     public GameManager gameManager;
     public GameObject jumpBlock;
+    public TutorialMenu tutorialMenu;
+
+    private void Awake()
+    {
+        if (PlayerPrefs.GetInt("UserSeenTheTutorial", 0) == 0)
+        {
+            Time.timeScale = 0;
+            joystick.gameObject.SetActive(false);
+            tutorialMenu.ShowTutorialMenu();
+        }
+    }
 
     private void TeleportPlayer()
     {
@@ -40,6 +50,12 @@ public class BatActions : MonoBehaviour
 
     void Update()
     {
+        if (tutorialMenu.isTutorialMenuHided && !gameOverSrcreen.isActiveAndEnabled)
+        {
+            Time.timeScale = 1;
+            joystick.gameObject.SetActive(true);
+        }
+
         transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
         Camera.main.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
 
